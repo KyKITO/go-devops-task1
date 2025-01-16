@@ -1,3 +1,3 @@
-module go-devops-task1
+module github.com/KyKITO/go-devops-task1
 
-go 1.23.4
+go 1.22.8
