@@ -58,7 +58,7 @@ func CreateStatsAnalyzer(loadThreshold, memoryThreshold, diskThreshold, networkT
 			fmt.Printf("Free disk space is too low: %d Mb left\n", availableSpace)
 		}
 		if networkUsagePercent > networkThreshold {
-			availableBandwidth := (stats.NetworkCapacity - stats.NetworkUsage) / (1024 * 1024 / 8)
+			availableBandwidth := (stats.NetworkCapacity - stats.NetworkUsage) * 8 / (1024 * 1024)
 			fmt.Printf("Network bandwidth usage high: %d Mbit/s available\n", availableBandwidth)
 		}
 	}
@@ -69,7 +69,6 @@ func ParseStats(rawStats []byte) (ServerStats, error) {
 	if len(parts) != 7 {
 		return ServerStats{}, fmt.Errorf("invalid data format")
 	}
-
 	stats := ServerStats{}
 	for i, part := range parts {
 		value, err := strconv.Atoi(strings.TrimSpace(part))
@@ -92,7 +91,7 @@ func ParseStats(rawStats []byte) (ServerStats, error) {
 		case 6:
 			stats.NetworkUsage = value
 		default:
-			// No action needed
+
 		}
 	}
 	return stats, nil
