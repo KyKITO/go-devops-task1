@@ -58,7 +58,7 @@ func CreateStatsAnalyzer(loadThreshold, memoryThreshold, diskThreshold, networkT
 			fmt.Printf("Free disk space is too low: %d Mb left\n", availableSpace)
 		}
 		if networkUsagePercent > networkThreshold {
-			availableBandwidth := (stats.NetworkCapacity - stats.NetworkUsage) * 8 / (1024 * 1024)
+			availableBandwidth := (stats.NetworkCapacity - stats.NetworkUsage) / (1024 * 1024 / 8)
 			fmt.Printf("Network bandwidth usage high: %d Mbit/s available\n", availableBandwidth)
 		}
 	}
@@ -108,12 +108,10 @@ func CreateServerPoller(url string, reqTimeout, reqFreq time.Duration, errorThre
 			defer close(responsesChan)
 			for {
 				time.Sleep(reqFreq)
-
 				if errorCounter >= errorThreshold {
 					fmt.Println("Unable to fetch server statistic")
 					break
 				}
-
 				resp, err := client.Get(url)
 				if err != nil || resp.StatusCode != http.StatusOK {
 					errorCounter++
@@ -122,7 +120,6 @@ func CreateServerPoller(url string, reqTimeout, reqFreq time.Duration, errorThre
 					}
 					continue
 				}
-
 				body, err := io.ReadAll(resp.Body)
 				if err != nil {
 					errorCounter++
@@ -130,12 +127,10 @@ func CreateServerPoller(url string, reqTimeout, reqFreq time.Duration, errorThre
 					continue
 				}
 				resp.Body.Close()
-
 				responsesChan <- body
 				errorCounter = 0
 			}
 		}()
-
 		return responsesChan
 	}
 }
